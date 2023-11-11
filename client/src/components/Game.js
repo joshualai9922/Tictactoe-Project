@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Board from "./Board";
-// import { Window, MessageList, MessageInput } from "stream-chat-react";
-// import "./Chat.css";
+
 
 function Game({ channel, setChannel }) {
   const [playersJoined, setPlayersJoined] = useState(
@@ -30,6 +29,7 @@ function Game({ channel, setChannel }) {
       </button>
       {result.state === "won" && <div> {result.winner} Won The Game</div>}
       {result.state === "tie" && <div> Game Tied!</div>}
+      
     </div>
   );
 }
