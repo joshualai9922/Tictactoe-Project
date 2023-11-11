@@ -12,7 +12,7 @@ function Board({ result, setResult }) {
   const { channel } = useChannelStateContext();
   const { client } = useChatContext();
   const isFirstRender = useRef(true);
-  
+  const anotherIsFirstRender = useRef(true);
 
   useEffect(() => {
     window.alert(`Welcome to a new game of tictactoe! The first player to select 3 squares in a straight line wins.`);
@@ -23,22 +23,50 @@ function Board({ result, setResult }) {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
-    }
+    }else{
     const symbol = turn === 'O' ? 'cross' : 'circle';
     const text = `A ${symbol} has been placed at ${pos}`
     channel.sendEvent({
       type: "message",
       data: { text },
     });
-
+  }
   }, [pos]);
 
-
-
+  
   useEffect(() => {
     checkIfTie();
     checkWin();
   }, [board]);
+
+ 
+
+  useEffect(() => {
+    if (anotherIsFirstRender.current) {
+      anotherIsFirstRender.current = false;
+      return;
+    }
+    else{
+      if (result.winner==="none") {
+        const endText="it's a tie!"
+        channel.sendEvent({
+          type: "endMessage",
+          data: { endText },
+        });
+        
+      }
+      else{
+   const endText=`${result.winner} Won The Game`
+    channel.sendEvent({
+      type: "endMessage",
+      data: { endText },
+    });
+    }
+  }}, [result]);
+
+  
+
+
 
 
 
@@ -108,8 +136,8 @@ function Board({ result, setResult }) {
 
       if (foundWinningPattern) {
         setResult({ winner: board[currPattern[0]], state: "won" });
-      }
-    });
+        
+    }})
   };
 
   const checkIfTie = () => {
@@ -122,6 +150,7 @@ function Board({ result, setResult }) {
 
     if (filled) {
       setResult({ winner: "none", state: "tie" });
+      
     }
   };
 
@@ -144,8 +173,12 @@ function Board({ result, setResult }) {
       
       channel.removeAllListeners();
     }
-    
-  })
+
+    if (event.type == "endMessage" ){
+      window.alert(event.data.endText);
+      channel.removeAllListeners();
+    }
+  });
 
 
   
@@ -159,7 +192,7 @@ function Board({ result, setResult }) {
     
 
   return (
-    <div className="board" aria-label="welcome to tictactoe" tabIndex="0">
+    <div className="board" aria-label="tictactoe game" tabIndex="0">
       <div className="row">
         <Square 
           val={board[0]}
