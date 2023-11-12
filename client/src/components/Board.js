@@ -2,23 +2,43 @@ import React, { useEffect, useState,useRef } from "react";
 import { useChannelStateContext, useChatContext } from "stream-chat-react";
 import Square from "./Square";
 import { Patterns } from "../WinningPatterns";
+import Cookies from "universal-cookie";
+import cookies from "./SignUp";
+
 function Board({ result, setResult }) {
   const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
   const [player, setPlayer] = useState("X");
   const [turn, setTurn] = useState("X");
-
   const [pos, setPos] = useState("");
+  const [moveNumber, setMoveNumber] = useState(1);
+  const [squareNumber, setSquareNumber] = useState("");
+  const [gameID, setGameID] = useState(null);
 
   const { channel } = useChannelStateContext();
   const { client } = useChatContext();
   const isFirstRender = useRef(true);
   const anotherIsFirstRender = useRef(true);
 
+  /////to get cookie by name
+  function getCookieValue(cookieName) {
+    const cookies = document.cookie.split(";").map(cookie => cookie.trim().split("="));
+    for (const [name, value] of cookies) {
+      if (name === cookieName) {
+        return value;
+      }
+    }
+    return null; // Return null if the cookie is not found
+  }
+
+//alert for welcome msg
   useEffect(() => {
     window.alert(`Welcome to a new game of tictactoe! The first player to select 3 squares in a straight line wins.`);
+    
+    
+    
   }, []);
 
-
+//alert for move
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -34,13 +54,14 @@ function Board({ result, setResult }) {
   }, [pos]);
 
   
+  //check every turn whether got win/tie
   useEffect(() => {
     checkIfTie();
     checkWin();
   }, [board]);
 
  
-
+//if got change in result, announce winner
   useEffect(() => {
     if (anotherIsFirstRender.current) {
       anotherIsFirstRender.current = false;
@@ -70,7 +91,7 @@ function Board({ result, setResult }) {
 
 
 
-  //choosing square
+  //function for user choose square
   const chooseSquare = async (square) => {
     if (turn === player && board[square] === "") {
       setTurn(player === "X" ? "O" : "X");
@@ -78,7 +99,82 @@ function Board({ result, setResult }) {
         type: "game-move",
         data: { square, player },
       });
+
+
+      //if first move made, store the player1 name and update state for gameID
+      if (moveNumber ===1) {
+        const name = getCookieValue("firstName");
+        
+        try {
+          const body = {name};
+          const response = await fetch("http://localhost:3001/game", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+          });
+          const resGameID= await response.json();
+          setGameID(resGameID);
+        } catch (err) {
+          console.error(err.message);
+        }
+      }
+      else if (moveNumber===2){
+        const name = getCookieValue("firstName");
+        try {
+          const body = {name};
+          const response = await fetch(`http://localhost:3001/game/playertwo/${gameID}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+          });
+         const heree = await response.json();
+         console.log(heree);
+          
+        } catch (err) {
+          console.error(err.message);
+        }
+
+      }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//everytime a square is clicked(all the time here), put sq number into server
+
       
+        
+        
+        // try {
+        //   const body = {name}
+        //   const response = await fetch("http://localhost:3001/game", {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify(body)
+        //   });
+        //   const resGameID= await response.json();
+        //   setGameID(resGameID);
+        // } catch (err) {
+        //   console.error(err.message);
+        // }
+        // // setMoveNumber(2) ++
+
+
+      
+
+
+
+
+
+
+
+      //update the moves every time
+        
+      //if moveNumber==1 
+      //post new game [name1,name2].   name1 is the player who made the move
+
+      //put  [moveNumber,squareNumber] to backend
+      // moveNumber ++
+
+
       setBoard(
         board.map((val, idx) => {
           if (idx === square && val === "") {
@@ -122,7 +218,7 @@ function Board({ result, setResult }) {
       }
     }
   
-
+//function to check win
   const checkWin = () => {
     Patterns.forEach((currPattern) => {
       const firstPlayer = board[currPattern[0]];
@@ -140,6 +236,7 @@ function Board({ result, setResult }) {
     }})
   };
 
+//function to check tie
   const checkIfTie = () => {
     let filled = true;
     board.forEach((square) => {
@@ -154,6 +251,7 @@ function Board({ result, setResult }) {
     }
   };
 
+//handle channel events
   channel.on((event) => {
     if (event.type == "game-move" && event.user.id !== client.userID) {
       const currentPlayer = event.data.player === "X" ? "O" : "X";

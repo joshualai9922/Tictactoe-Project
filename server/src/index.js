@@ -63,13 +63,14 @@ app.post("/login", async (req, res) => {
 
 app.post("/game", async (req, res) => {
   try {
-    const { names } = req.body;
+    const { name } = req.body;
     const newGame = await pool.query(
-      "INSERT INTO tictactoe_1 (name1, name2) VALUES ($1, $2) RETURNING *",
-      [names[0], names[1]]
+      "INSERT INTO tictactoe_1 (name1) VALUES ($1) RETURNING *",
+      [name]
     );
-
-    res.json(newGame.rows[0]);
+  
+    res.json(newGame["rows"][0]["game_id"]);
+    
   } catch (err) {
     console.error(err.message);
   }
@@ -81,8 +82,9 @@ app.put("/game/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { move } = req.body; //move = [move number, square number]
+    const columnName = `move${move[0]}`;
     const updateMove = await pool.query(
-      `UPDATE tictactoe_1 SET move${move[0]} = $1 WHERE todo_id = $2`,
+      `UPDATE tictactoe_1 SET ${columnName} = $1 WHERE game_id = $2`,
       [move[1], id]
     );
 
@@ -91,6 +93,26 @@ app.put("/game/:id", async (req, res) => {
     console.error(err.message);
   }
 });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//update player 2
+app.put("/game/playertwo/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    
+    const updatePlayerTwo = await pool.query(
+      "UPDATE tictactoe_1 SET name2 = $1 WHERE game_id = $2",
+      [name,id]
+    );
+    res.json("player 2 updated!")
+    
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+
 
 //get a game
 
