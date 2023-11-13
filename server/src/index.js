@@ -239,7 +239,17 @@ app.get("/game", async (req, res) => {
 });
 
 
+app.get("/gameHistory", async (req, res) => {
+  try {
+    const games = await pool.query(
+      "SELECT * FROM tictactoe_results"
+    );
 
+    res.json(games.rows); // Return all rows, not just the first one
+  } catch (err) {
+    console.error(err.message);
+  }
+});
 
 
 
