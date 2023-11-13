@@ -18,6 +18,7 @@ function Board({ result, setResult }) {
   const { client } = useChatContext();
   const isFirstRender = useRef(true);
   const anotherIsFirstRender = useRef(true);
+  const isEnd =useRef(false)
 
   /////to get cookie by name
   function getCookieValue(cookieName) {
@@ -58,34 +59,58 @@ function Board({ result, setResult }) {
   useEffect(() => {
     checkIfTie();
     checkWin();
-  }, [board]);
+  }, [pos]);
 
  
-//if got change in result, announce winner
-  useEffect(() => {
-    if (anotherIsFirstRender.current) {
-      anotherIsFirstRender.current = false;
-      return;
-    }
-    else{
-      if (result.winner==="none") {
-        const endText="it's a tie!"
-        channel.sendEvent({
-          type: "endMessage",
-          data: { endText },
-        });
+// if got change in result, announce winner
+  // useEffect(() => {
+  //   if (anotherIsFirstRender.current) {
+  //     anotherIsFirstRender.current = false;
+  //     return;
+  //   }
+  //   else{
+  //     if (result.winner==="none") {
+  //       const endText="it's a tie!"
+  //       channel.sendEvent({
+  //         type: "endMessage",
+  //         data: { endText },
+  //       });
         
-      }
-      else{
-   const endText=`${result.winner} Won The Game`
-    channel.sendEvent({
-      type: "endMessage",
-      data: { endText },
-    });
-    }
-  }}, [result]);
+  //     }
+  //     else{
+  //  const endText=`${result.winner} Won The Game`
+  //   channel.sendEvent({
+  //     type: "endMessage",
+  //     data: { endText },
+  //   });
+  //   }
+  // }}, [result]);
 
-  
+  function fetchAndCheckResult() {
+    return fetch("http://localhost:3001/game")
+      .then(response => response.json())
+      .then(data => {
+        return data.result === null;
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+        // You might want to handle the error here or rethrow it
+        throw error;
+      });
+  }
+
+  function fetchAndCheckName2() {
+    return fetch("http://localhost:3001/game")
+      .then(response => response.json())
+      .then(data => {
+        return data.name2 === null;
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+        // You might want to handle the error here or rethrow it
+        throw error;
+      });
+  }
 
 
 
@@ -93,6 +118,8 @@ function Board({ result, setResult }) {
 
   //function for user choose square
   const chooseSquare = async (square) => {
+    if (!isEnd.current){
+      
     if (turn === player && board[square] === "") {
       setTurn(player === "X" ? "O" : "X");
       await channel.sendEvent({
@@ -100,41 +127,78 @@ function Board({ result, setResult }) {
         data: { square, player },
       });
 
-
+      const latestNoResult = await fetchAndCheckResult();
+      const latestNoName2 = await fetchAndCheckName2();
       //if first move made, store the player1 name and update state for gameID
-      if (moveNumber ===1) {
+      if (!latestNoResult) { //got results
         const name = getCookieValue("firstName");
-        
         try {
-          const body = {name};
+          console.log('FIRST TRY BLOCK OF CHOOSE SQ EXECTUTED')
+          const body = {name };
           const response = await fetch("http://localhost:3001/game", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body)
           });
-          const resGameID= await response.json();
-          setGameID(resGameID);
+          
+          
         } catch (err) {
           console.error(err.message);
+         
         }
       }
-      else if (moveNumber===2){
-        const name = getCookieValue("firstName");
+      else if (latestNoName2){
+          const name = getCookieValue("firstName");
         try {
+          console.log('SECOND TRY BLOCK OF CHOOSE SQ EXECTUTED')
           const body = {name};
-          const response = await fetch(`http://localhost:3001/game/playertwo/${gameID}`, {
+          const response = await fetch(`http://localhost:3001/game/playertwo`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body)
           });
-         const heree = await response.json();
-         console.log(heree);
           
         } catch (err) {
           console.error(err.message);
+          console.log('error at the second try block in client')
         }
-
       }
+      else {
+        
+      try {
+        console.log('THIRD TRY BLOCK OF CHOOSE SQ EXECTUTED')
+        const response = await fetch(`http://localhost:3001/game/incrementCount`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+        });
+        
+      } catch (err) {
+        console.error(err.message);
+        console.log('error at the third try block in client')
+      }
+    }
+        
+        
+  
+  
+          
+      // else if (moveNumber===2){
+      //   const name = getCookieValue("firstName");
+      //   try {
+      //     const body = {name};
+      //     const response = await fetch(`http://localhost:3001/game/playertwo/${gameID}`, {
+      //       method: "PUT",
+      //       headers: { "Content-Type": "application/json" },
+      //       body: JSON.stringify(body)
+      //     });
+      //    const heree = await response.json();
+      //    console.log(heree);
+          
+      //   } catch (err) {
+      //     console.error(err.message);
+      //   }
+
+      // }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -216,7 +280,7 @@ function Board({ result, setResult }) {
 
         setPos(`Row ${row} Column ${column}`);
       }
-    }
+    }}
   
 //function to check win
   const checkWin = () => {
@@ -231,13 +295,35 @@ function Board({ result, setResult }) {
       });
 
       if (foundWinningPattern) {
+        if (!isEnd.current){
         setResult({ winner: board[currPattern[0]], state: "won" });
-        
+        isEnd.current = true;
+        try {
+          const endResult = "win"
+          console.log('RESULT FUNCTION EXECUTED')
+          const body = {endResult};
+          const response =  fetch(`http://localhost:3001/game/endResult`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+          });
+          const endText = `${board[currPattern[0]]} has won`
+          channel.sendEvent({
+            type: "endMessage",
+            data: { endText },
+          });
+
+        } catch (err) {
+          console.error(err.message);
+          console.log('error in updating end result')
+        }
+        }
     }})
   };
 
 //function to check tie
   const checkIfTie = () => {
+    if (!isEnd.current){
     let filled = true;
     board.forEach((square) => {
       if (square == "") {
@@ -246,9 +332,30 @@ function Board({ result, setResult }) {
     });
 
     if (filled) {
-      setResult({ winner: "none", state: "tie" });
+      setResult({ winner: "none", state: "tie" })
+      isEnd.current = true;
+        try {
+          const endResult = "tie"
+          console.log('RESULT FUNCTION EXECUTED')
+          const body = {endResult};
+          const response =  fetch(`http://localhost:3001/game/endResult`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+          });
+          console.log(`Result state is ${result.state}`);
+        } catch (err) {
+          console.error(err.message);
+          console.log('error in updating end result')
+        };
+        const endText = "It's a tie!"
+        channel.sendEvent({
+          type: "endMessage",
+          data: { endText },
+        });
       
     }
+  }
   };
 
 //handle channel events

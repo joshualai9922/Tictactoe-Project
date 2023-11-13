@@ -26,7 +26,7 @@ function App() {
     setIsAuth(false);
   };
 
-  if (token) {
+  if (token && client.user === undefined) {
     client
       .connectUser(
         {

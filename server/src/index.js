@@ -59,79 +59,191 @@ app.post("/login", async (req, res) => {
 
 // POSTGRESQL DB ROUTES //
 
-//create a game
+//create a game 1
 
 app.post("/game", async (req, res) => {
   try {
     const { name } = req.body;
+    const count = 1; // Assuming you want to set count to 1
     const newGame = await pool.query(
-      "INSERT INTO tictactoe_1 (name1) VALUES ($1) RETURNING *",
-      [name]
+      "INSERT INTO tictactoe_results (name1, count) VALUES ($1, $2) RETURNING *",
+      [name, count]
     );
   
     res.json(newGame["rows"][0]["game_id"]);
-    
+
   } catch (err) {
     console.error(err.message);
   }
 });
+
+
+
 
 //update a game
 
-app.put("/game/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { move } = req.body; //move = [move number, square number]
-    const columnName = `move${move[0]}`;
-    const updateMove = await pool.query(
-      `UPDATE tictactoe_1 SET ${columnName} = $1 WHERE game_id = $2`,
-      [move[1], id]
-    );
+// app.put("/game/:id", async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { move } = [req.body]; //move = [move number, square number]
+    
+//     const columnName = `move${move[0]}`;
+//     const updateMove = await pool.query(
+//       `UPDATE tictactoe_1 SET ${columnName} = $1 WHERE game_id = $2`,
+//       [move[1], id]
+//     );
 
-    res.json("game was updated!");
-  } catch (err) {
-    console.error(err.message);
-  }
-});
+//     res.json("server ok! game was updated!");
+//     console.log(`MOVE TRY BLOCK OK`)
+//   } catch (err) {
+//     console.error(err.message);
+//     console.log('ERROR IN MOVES TRY BLOCK')
+//   }
+// });
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //update player 2
-app.put("/game/playertwo/:id", async (req, res) => {
+// app.put("/game/playertwo", async (req, res) => {
+//   try {
+    
+//     const { name } = req.body;
+    
+//     const updatePlayerTwo = await pool.query(
+//       "UPDATE tictactoe_1 SET name2 = $1 WHERE game_id = $2",
+//       [name,id]
+//     );
+//     res.json("player 2 updated!")
+//     console.log(`UPDATE PLAYER 2 BLOCK DONE`)
+    
+//   } catch (err) {
+//     console.error(`ERROR FROM UPDATE PLAYER 2 BLOCK: ${err.message}`);
+//   }
+// });
+
+
+app.put("/game/playertwo", async (req, res) => {
   try {
-    const { id } = req.params;
     const { name } = req.body;
-    
-    const updatePlayerTwo = await pool.query(
-      "UPDATE tictactoe_1 SET name2 = $1 WHERE game_id = $2",
-      [name,id]
+
+    // Find the latest row
+    const latestGame = await pool.query(
+      "SELECT * FROM tictactoe_results ORDER BY game_id DESC LIMIT 1"
     );
-    res.json("player 2 updated!")
-    
-  } catch (err) {
-    console.error(err.message);
+
+    if (latestGame.rows.length > 0) {
+      const latestRow = latestGame.rows[0];
+
+      // Update name2 with your name and increment count by 1
+      const updatedGame = await pool.query(
+        "UPDATE tictactoe_results SET name2 = $1, count = count + 1 WHERE game_id = $2 RETURNING *",
+        [name, latestRow.game_id]
+      );
+
+      res.json(updatedGame.rows[0]); // Return the updated row
+    } 
+  }
+    catch (err) {
+    console.error(`ERROR FROM UPDATE PLAYER 2 BLOCK: ${err.message}`);
   }
 });
+
+
+
+app.put("/game/incrementCount", async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    // Find the latest row
+    const latestGame = await pool.query(
+      "SELECT * FROM tictactoe_results ORDER BY game_id DESC LIMIT 1"
+    );
+
+    if (latestGame.rows.length > 0) {
+      const latestRow = latestGame.rows[0];
+
+      // Update name2 with your name and increment count by 1
+      const updatedGame = await pool.query(
+        "UPDATE tictactoe_results SET count = count + 1 WHERE game_id = $1 RETURNING *",
+        [latestRow.game_id]
+      );
+
+      res.json(updatedGame.rows[0]); // Return the updated row
+    } 
+  }
+    catch (err) {
+    console.error(`ERROR FROM INCREMENT COUNT BLOCK: ${err.message}`);
+  }
+});
+
+app.put("/game/endResult", async (req, res) => {
+  try {
+    const { endResult } = req.body;
+
+    // Find the latest row
+    const latestGame = await pool.query(
+      "SELECT * FROM tictactoe_results ORDER BY game_id DESC LIMIT 1"
+    );
+
+    if (latestGame.rows.length > 0) {
+      const latestRow = latestGame.rows[0];
+
+      // Update name2 with your name and increment count by 1
+      const updatedGame = await pool.query(
+        "UPDATE tictactoe_results SET result = $1  WHERE game_id = $2 RETURNING *",
+        [endResult, latestRow.game_id]
+      );
+
+      res.json(updatedGame.rows[0]); // Return the updated row
+    } 
+  }
+    catch (err) {
+    console.error(`ERROR FROM endResult BLOCK: ${err.message}`);
+  }
+});
+
 
 
 
 //get a game
 
-app.get("/game/:name", async (req, res) => {
-  try {
-    const { name } = req.params;
+// app.get("/game/:name", async (req, res) => {
+//   try {
+//     const { name } = req.params;
     
+//     const games = await pool.query(
+//       "SELECT * FROM tictactoe_results WHERE name1 = $1 OR name2 = $1",
+//       [name]
+//     );
+
+//     res.json(games.rows);
+//   } catch (err) {
+//     console.error(err.message);
+//   }
+// });
+
+
+// app.listen(3001, () => {
+  
+// });
+
+app.get("/game", async (req, res) => {
+  try {
     const games = await pool.query(
-      "SELECT * FROM tictactoe_1 WHERE name1 = $1 OR name2 = $1",
-      [name]
+      "SELECT * FROM tictactoe_results ORDER BY game_id DESC LIMIT 1"
     );
 
-    res.json(games.rows);
+    res.json(games.rows[0]); // Assuming you want to return a single row, the latest one
   } catch (err) {
     console.error(err.message);
   }
 });
 
 
+
+
+
+
+
 app.listen(3001, () => {
-  console.log("Server is running on port 3001");
+  // Server listening on port 3001
 });
