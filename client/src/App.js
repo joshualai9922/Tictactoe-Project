@@ -7,6 +7,8 @@ import Cookies from "universal-cookie";
 import { useState } from "react";
 import JoinGame from "./components/JoinGame";
 import "./App.css";
+import Button from '@mui/material/Button';
+
 
 function App() {
   const api_key = "najz5nb7sgzt";
@@ -14,6 +16,7 @@ function App() {
   const token = cookies.get("token");
   const client = StreamChat.getInstance(api_key);
   const [isAuth, setIsAuth] = useState(false);
+  const [gotAcc, setGotAcc] = useState(false);
 
   const logOut = () => {
     cookies.remove("token");
@@ -44,20 +47,36 @@ function App() {
       });
   }
   return (
+    
     <div className="App">
-      {isAuth ? (
-        <Chat client={client}>
-          <JoinGame />
-          <button onClick={logOut}> Log Out</button>
-        </Chat>
-      ) : (
-        <>
-          <SignUp setIsAuth={setIsAuth} />
-          <Login setIsAuth={setIsAuth} />
-        </>
-      )}
+      {/* <Router>
+      <Routes>
+        <Route path="signup" element={<SignUp/>}/>
+        <Route path="login" element={<Login/>}/>
+        </Routes>
+        </Router> */}
+        
+        
+        {isAuth ? (
+  <Chat client={client}>
+    <JoinGame />
+    <Button variant="outlined" color="error" className="logoutButton" onClick={logOut}> Logout</Button>
+  </Chat>
+) : (
+  gotAcc ? (
+    <Login setIsAuth={setIsAuth} setGotAcc={setGotAcc} />
+
+  ) : (
+
+    <SignUp setIsAuth={setIsAuth} setGotAcc={setGotAcc} />
+  )
+)}
+        
     </div>
+        
   );
+
+
 }
 
 export default App;

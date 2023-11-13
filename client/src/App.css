@@ -1,10 +1,11 @@
 .App {
-  width: 100vw;
-  height: 100vh;
+  width:  100vw;
+  height: 65vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #76a2ff;
+  background-color: rgb(255, 255, 255);
+
 }
 
 body {
@@ -12,14 +13,40 @@ body {
   margin: 0;
 }
 
-.login,
+.link-button {
+  background: none;
+  border: none;
+  color: blue; /* Link color */
+  text-decoration: underline; /* Underline style to mimic link */
+  cursor: pointer;
+  font-weight: bold; /* Bold font */
+}
+
+.link-button:hover {
+  color: red; /* Change color on hover */
+}
+
+/* .logoutButton {
+  position: absolute;
+  top: -225px; 
+  right: -550px; 
+  
+} */
+.logoutButton {
+  position: absolute;
+  top: -40%; 
+  right: -30%; 
+  
+}
+
+/* .login,
 .signUp {
   display: flex;
   flex-direction: column;
   margin: 20px;
-}
+} */
 
-.login input,
+/* .login input,
 .signUp input {
   margin: 10px;
   padding: 10px;
@@ -27,9 +54,9 @@ body {
   border-radius: 4px;
   width: 300px;
   height: 30px;
-}
+} */
 
-.login button,
+/* .login button,
 .signUp button {
   margin: 10px;
   padding: 10px;
@@ -38,24 +65,29 @@ body {
   width: 320px;
   height: 30px;
   cursor: pointer;
-}
-
+} */
+/* 
 .login label,
 .signUp label {
   text-align: center;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 20px;
-  color: white;
-}
+  color: rgb(6, 5, 5);
+} */
 
 .board {
   width: 500px;
   height: 500px;
-  background-color: rgb(252, 252, 252);
-  border: 1px solid black;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid rgb(255, 255, 255);
   display: flex;
   flex-direction: column;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
+
 
 .row {
   flex: 33%;
@@ -76,7 +108,7 @@ body {
 }
 
 .square:active {
-  background-color: lightgray;
+  background-color: rgb(49, 182, 56);
 }
 
 h4 {
@@ -85,7 +117,7 @@ h4 {
   font-size: 30px;
 }
 
-.joinGame input {
+/* .joinGame input {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -99,4 +131,6 @@ h4 {
   width: 220px;
   height: 51px;
   cursor: pointer;
-}
+} */
+
+
