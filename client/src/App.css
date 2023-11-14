@@ -1,11 +1,10 @@
 .App {
-  width:  100vw;
+  width: 100vw;
   height: 65vh;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: rgb(255, 255, 255);
-
 }
 
 body {
@@ -26,54 +25,11 @@ body {
   color: red; /* Change color on hover */
 }
 
-/* .logoutButton {
-  position: absolute;
-  top: -225px; 
-  right: -550px; 
-  
-} */
 .logoutButton {
   position: absolute;
-  top: -40%; 
-  right: -30%; 
-  
+  top: -40%;
+  right: -30%;
 }
-
-/* .login,
-.signUp {
-  display: flex;
-  flex-direction: column;
-  margin: 20px;
-} */
-
-/* .login input,
-.signUp input {
-  margin: 10px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 300px;
-  height: 30px;
-} */
-
-/* .login button,
-.signUp button {
-  margin: 10px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 320px;
-  height: 30px;
-  cursor: pointer;
-} */
-/* 
-.login label,
-.signUp label {
-  text-align: center;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 20px;
-  color: rgb(6, 5, 5);
-} */
 
 .board {
   width: 500px;
@@ -87,7 +43,6 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-
 
 .row {
   flex: 33%;
@@ -116,21 +71,3 @@ h4 {
   color: white;
   font-size: 30px;
 }
-
-/* .joinGame input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 220px;
-  height: 30px;
-}
-.joinGame button {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 220px;
-  height: 51px;
-  cursor: pointer;
-} */
-
-

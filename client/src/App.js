@@ -7,8 +7,7 @@ import Cookies from "universal-cookie";
 import { useState } from "react";
 import JoinGame from "./components/JoinGame";
 import "./App.css";
-import Button from '@mui/material/Button';
-
+import Button from "@mui/material/Button";
 
 function App() {
   const api_key = "najz5nb7sgzt";
@@ -47,36 +46,27 @@ function App() {
       });
   }
   return (
-    
     <div className="App">
-      {/* <Router>
-      <Routes>
-        <Route path="signup" element={<SignUp/>}/>
-        <Route path="login" element={<Login/>}/>
-        </Routes>
-        </Router> */}
-        
-        
-        {isAuth ? (
-  <Chat client={client}>
-    <JoinGame />
-    <Button variant="outlined" color="error" className="logoutButton" onClick={logOut}> Logout</Button>
-  </Chat>
-) : (
-  gotAcc ? (
-    <Login setIsAuth={setIsAuth} setGotAcc={setGotAcc} />
-
-  ) : (
-
-    <SignUp setIsAuth={setIsAuth} setGotAcc={setGotAcc} />
-  )
-)}
-        
+      {isAuth ? (
+        <Chat client={client}>
+          <JoinGame />
+          <Button
+            variant="outlined"
+            color="error"
+            className="logoutButton"
+            onClick={logOut}
+          >
+            {" "}
+            Logout
+          </Button>
+        </Chat>
+      ) : gotAcc ? (
+        <Login setIsAuth={setIsAuth} setGotAcc={setGotAcc} />
+      ) : (
+        <SignUp setIsAuth={setIsAuth} setGotAcc={setGotAcc} />
+      )}
     </div>
-        
   );
-
-
 }
 
 export default App;

@@ -10,16 +10,19 @@ Follow these steps to load the web application, create a game session, and play 
 
 ## Steps
 
-1. Open a terminal and enter the following commands:
+1. Update .env file with respective keys
+
+2. Open a terminal and enter the following commands:
 
    ```bash
    cd client
    yarn start
    ```
 
-1. Open another terminal and enter the following commands:
+3. Open another terminal and enter the following commands:
    ```bash
    cd server
+   yarn install
    yarn start
    ```
 
