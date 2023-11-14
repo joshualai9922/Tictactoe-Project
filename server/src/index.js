@@ -10,9 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 const api_key = "najz5nb7sgzt";
-const api_secret = "pup8x6n984h4va9guk4bftvhyp479ajdrxqeayxfp8ggar9fwaebr99j87rhhwgw";
+const api_secret =
+  "pup8x6n984h4va9guk4bftvhyp479ajdrxqeayxfp8ggar9fwaebr99j87rhhwgw";
 const serverClient = StreamChat.getInstance(api_key, api_secret);
-
 
 // ROUTES //
 
@@ -55,11 +55,9 @@ app.post("/login", async (req, res) => {
   }
 });
 
-
-
 // POSTGRESQL DB ROUTES //
 
-//create a game 1
+//At 1st move, create a game and input player 1 name and increment count
 
 app.post("/game", async (req, res) => {
   try {
@@ -69,57 +67,14 @@ app.post("/game", async (req, res) => {
       "INSERT INTO tictactoe_results (name1, count) VALUES ($1, $2) RETURNING *",
       [name, count]
     );
-  
-    res.json(newGame["rows"][0]["game_id"]);
 
+    res.json(newGame["rows"][0]["game_id"]);
   } catch (err) {
     console.error(err.message);
   }
 });
 
-
-
-
-//update a game
-
-// app.put("/game/:id", async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { move } = [req.body]; //move = [move number, square number]
-    
-//     const columnName = `move${move[0]}`;
-//     const updateMove = await pool.query(
-//       `UPDATE tictactoe_1 SET ${columnName} = $1 WHERE game_id = $2`,
-//       [move[1], id]
-//     );
-
-//     res.json("server ok! game was updated!");
-//     console.log(`MOVE TRY BLOCK OK`)
-//   } catch (err) {
-//     console.error(err.message);
-//     console.log('ERROR IN MOVES TRY BLOCK')
-//   }
-// });
-
-
-//update player 2
-// app.put("/game/playertwo", async (req, res) => {
-//   try {
-    
-//     const { name } = req.body;
-    
-//     const updatePlayerTwo = await pool.query(
-//       "UPDATE tictactoe_1 SET name2 = $1 WHERE game_id = $2",
-//       [name,id]
-//     );
-//     res.json("player 2 updated!")
-//     console.log(`UPDATE PLAYER 2 BLOCK DONE`)
-    
-//   } catch (err) {
-//     console.error(`ERROR FROM UPDATE PLAYER 2 BLOCK: ${err.message}`);
-//   }
-// });
-
+//At 2nd move, input player 2 name and increment count
 
 app.put("/game/playertwo", async (req, res) => {
   try {
@@ -140,14 +95,13 @@ app.put("/game/playertwo", async (req, res) => {
       );
 
       res.json(updatedGame.rows[0]); // Return the updated row
-    } 
-  }
-    catch (err) {
+    }
+  } catch (err) {
     console.error(`ERROR FROM UPDATE PLAYER 2 BLOCK: ${err.message}`);
   }
 });
 
-
+//At 3rd move onwards, increment count at every turn
 
 app.put("/game/incrementCount", async (req, res) => {
   try {
@@ -168,12 +122,13 @@ app.put("/game/incrementCount", async (req, res) => {
       );
 
       res.json(updatedGame.rows[0]); // Return the updated row
-    } 
-  }
-    catch (err) {
+    }
+  } catch (err) {
     console.error(`ERROR FROM INCREMENT COUNT BLOCK: ${err.message}`);
   }
 });
+
+//Input Game end result
 
 app.put("/game/endResult", async (req, res) => {
   try {
@@ -194,37 +149,13 @@ app.put("/game/endResult", async (req, res) => {
       );
 
       res.json(updatedGame.rows[0]); // Return the updated row
-    } 
-  }
-    catch (err) {
+    }
+  } catch (err) {
     console.error(`ERROR FROM endResult BLOCK: ${err.message}`);
   }
 });
 
-
-
-
-//get a game
-
-// app.get("/game/:name", async (req, res) => {
-//   try {
-//     const { name } = req.params;
-    
-//     const games = await pool.query(
-//       "SELECT * FROM tictactoe_results WHERE name1 = $1 OR name2 = $1",
-//       [name]
-//     );
-
-//     res.json(games.rows);
-//   } catch (err) {
-//     console.error(err.message);
-//   }
-// });
-
-
-// app.listen(3001, () => {
-  
-// });
+//get the latest game
 
 app.get("/game", async (req, res) => {
   try {
@@ -238,21 +169,17 @@ app.get("/game", async (req, res) => {
   }
 });
 
+//get all the game history
 
 app.get("/gameHistory", async (req, res) => {
   try {
-    const games = await pool.query(
-      "SELECT * FROM tictactoe_results"
-    );
+    const games = await pool.query("SELECT * FROM tictactoe_results");
 
     res.json(games.rows); // Return all rows, not just the first one
   } catch (err) {
     console.error(err.message);
   }
 });
-
-
-
 
 app.listen(3001, () => {
   // Server listening on port 3001
