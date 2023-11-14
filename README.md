@@ -1,3 +1,9 @@
+# Tic Tac Toe
+
+# Description
+
+An online Tic Tac Toe game for persons with disabilities (PWDs)
+
 # Instructions for Loading and Playing the Web Application
 
 Follow these steps to load the web application, create a game session, and play the game on 2 or more browsers.
