@@ -10,7 +10,7 @@ import "./App.css";
 import Button from "@mui/material/Button";
 
 function App() {
-  const api_key = "najz5nb7sgzt";
+  const api_key = REACT_APP_api_key;
   const cookies = new Cookies();
   const token = cookies.get("token");
   const client = StreamChat.getInstance(api_key);

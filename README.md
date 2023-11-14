@@ -10,7 +10,7 @@ Follow these steps to load the web application, create a game session, and play 
 
 ## Steps
 
-1. Update .env file with respective keys
+1. Update .env file in root directory with respective keys
 
 2. Open a terminal and enter the following commands:
 

@@ -3,10 +3,10 @@ const { Pool } = pg;
 
 const pool = new Pool({
   user: "postgres",
-  password: "joshua9922",
+  password: process.env.REACT_APP_postgres_password,
   host: "localhost",
   port: 5432,
-  database: "tictactoe_project",
+  database: process.env.REACT_APP_postgres_database,
 });
 
 export default pool;
