@@ -82,6 +82,8 @@ All endpoints are relative to the base URL: `http://localhost:3001`
 
 ### Endpoint
 
+POST /game
+
 ### Description
 
 Create a new Tic Tac Toe game, input the name of Player 1 and increment move count.
