@@ -1,5 +1,7 @@
 # Tic Tac Toe
 
+Created by: Lai Weng Fung Joshua
+
 # Description
 
 An online Tic Tac Toe game for persons with disabilities (PWDs)
