@@ -32,13 +32,17 @@ function Login({ setIsAuth, setGotAcc }) {
       password,
     }).then((res) => {
       const { firstName, lastName, username, token, userId } = res.data;
-      cookies.set("token", token);
-      cookies.set("userId", userId);
-      cookies.set("username", username);
-      cookies.set("firstName", firstName);
-      cookies.set("lastName", lastName);
-      setIsAuth(true);
-      setGotAcc(true);
+      if (firstName) {
+        cookies.set("token", token);
+        cookies.set("userId", userId);
+        cookies.set("username", username);
+        cookies.set("firstName", firstName);
+        cookies.set("lastName", lastName);
+        setIsAuth(true);
+        setGotAcc(true);
+      } else {
+        console.log("no acc match");
+      }
     });
   };
   const handleLinkClick = () => {
