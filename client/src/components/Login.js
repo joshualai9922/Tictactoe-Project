@@ -63,7 +63,7 @@ function Login({ setIsAuth, setGotAcc }) {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }} aria-label="An image of a lock">
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
