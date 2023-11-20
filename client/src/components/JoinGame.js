@@ -149,7 +149,7 @@ function JoinGame() {
         <div className="joinGame">
           <div>
             <img
-              role="presentation"
+              aria-label="An image of tic tac toe"
               src={yourImage}
               alt="tictactoe"
               style={{
