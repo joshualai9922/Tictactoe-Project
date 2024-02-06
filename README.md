@@ -34,9 +34,7 @@ Follow these steps to load the web application, create a game session, and play 
 
 ## Overview
 
-To enhance accessibility for Persons With Disabilities (PWDs), the web application was designed with specific considerations. Additionally, a video demonstration has been provided to illustrate the user experience for individuals with sensory impairments.
-
-- **Video Demo Link:** [Web Application Accessibility Demo](https://drive.google.com/file/d/1QlXSi0sn6-ZB1r-GAINSvB4SMGcGm_9M/view?usp=sharing)
+To enhance accessibility for Persons With Disabilities (PWDs), the web application was designed with specific considerations. 
 
 ## Design Decisions
 
